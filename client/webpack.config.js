@@ -3,8 +3,6 @@ const WebpackPwaManifest = require('webpack-pwa-manifest');//download to offline
 const path = require('path');
 const { InjectManifest } = require('workbox-webpack-plugin');//caching 
 
-// TODO: Add and configure workbox plugins for a service worker and manifest file.
-// TODO: Add CSS loaders and babel to webpack.
 
 module.exports = () => {
   return {
@@ -23,13 +21,17 @@ module.exports = () => {
         title: 'J.A.T.E',
       }),
       new InjectManifest({
-        swSrc: './src/sw.js',
-        swDest: 'service-worker.js',
+        swSrc: './src-sw.js',
+        swDest:'src-sw.js',
       }),
       new WebpackPwaManifest({
+        fingerprints: false,
+        inject: true,
         name: 'Text Editor',
         short_name: "TE",
         description: "This is text editor",
+        background_color: '#225ca3',
+        theme_color: '#225ca3',
         start_url: "/",
         publicPath:"/",
         icons: [
@@ -45,15 +47,14 @@ module.exports = () => {
 
     module: {
       rules: [
-         {
-        test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
-      },
-
-      
+        {
+          test: /\.css$/i,
+          use: ['style-loader', 'css-loader'],
+        },
         {
           test: /\.m?js$/,
           exclude: /node_modules/,
+          // We use babel-loader in order to use ES6.
           use: {
             loader: 'babel-loader',
             options: {
@@ -61,8 +62,7 @@ module.exports = () => {
               plugins: ['@babel/plugin-proposal-object-rest-spread', '@babel/transform-runtime'],
             },
           },
-        }
-      
+        },
       ],
     },
   };
